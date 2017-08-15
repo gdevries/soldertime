@@ -1,3 +1,7 @@
+#include <Arduino.h>
+#include "deskclock.cpp"
+#include "routines.cpp"
+
 /** \file
  * Main loop for Solder:Time Desk Clock.
  *
@@ -5,24 +9,20 @@
  */
 
 // Test for Sleep
-static void
-check_sleep_timer(void)
-{
+static void check_sleep_timer(void) {
 	currentMillis = millis();
 	OptionModeFlag = false;
 
-	if(SleepEnable && (currentMillis - SleepTimer) > SleepLimit)
-	{
+	if(SleepEnable && (currentMillis - SleepTimer) > SleepLimit) {
 		// New for ST Desk Clock - goto Time vs Sleep
-		if (STATE== 1)
-		{
+		if (STATE== 1) {
 			SUBSTATE = 1;
 			blinkON = true;
 			blinkFlag = false;
 			blinkMin = false;
 			blinkHour = false;
 		} else {
-			STATE= 1; // was STATE= 99; 
+			STATE= 1; // was STATE= 99;
 			SUBSTATE = 0;
 			clearmatrix();
 		}
@@ -70,7 +70,7 @@ check_mode_button(void)
 			NextSUBStateRequest = false;
 			displayString("SPEC");
 			delay(300);
-		}      
+		}
 
 		// wait for them to stop holding the button
 		if (!digitalRead(MODEBUTTON))
@@ -106,8 +106,8 @@ check_set_button(void)
 			NextSUBStateRequest = false;
 			displayString("SPEC");
 			delay(300);
-		}   
-      
+		}
+
 		// wait for them to stop holding the button
 		if (digitalRead(SETBUTTON))
 			break;
@@ -116,7 +116,7 @@ check_set_button(void)
 	delay(100);
 	SleepTimer = millis();
 }
- 
+
 
 // Running Blink counter
 static void
@@ -135,7 +135,7 @@ check_blink(void)
 		blinkON = !blinkON;
 		blinkCounter = 0;
 	}
-}  
+}
 
 
 void loop()
@@ -146,33 +146,33 @@ void loop()
 	check_blink();
 
 	// these should be moved into function pointers.
-	switch (STATE) 
+	switch (STATE)
 	{
 	case 0: // Set-Up
 		STATE = 1;
 		break;
 
 	case 1: // Display Time
-		DisplayTimeSub(); 
+		DisplayTimeSub();
 		break;
 
 	case 2: // Set Time
 		setTimeSub();
-		break; 
+		break;
 
 	case 3: // Config Alarm
 		setAlarmSub();
 		break;
- 
+
 	case 4: // Stop Watch
 		StopWatch();
 		break;
- 
-	case 5: // Serial Display                                 
+
+	case 5: // Serial Display
 		DisplaySerialData();
 		break;
 
-	case 6: // Graphic Demo                                 
+	case 6: // Graphic Demo
 		graphican();
 		break;
 
@@ -189,7 +189,7 @@ void loop()
 			digitalWrite(SETBUTTON, HIGH);
 		}
 
-#if ARDUINO >= 101 
+#if ARDUINO >= 101
 		pinMode(SETBUTTON, INPUT_PULLUP);
 #else
 		pinMode(SETBUTTON, INPUT);
@@ -202,9 +202,9 @@ void loop()
 			SUBSTATE = 0;
 			// NextStateFlag = true;
 			NextStateRequest = false;
-			NextSUBStateRequest = false;      
+			NextSUBStateRequest = false;
 			blinkFlag = false;
-		}    
+		}
 		break;
 
 	case 99: // Sleep

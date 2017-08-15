@@ -1,16 +1,16 @@
+#include <Arduino.h>
+
 //*******************************************************************************************************************
 // 								                        Helper - State incrementor
 //*******************************************************************************************************************
 // Increments the Main state to the next state upto MAXSTATE
 // If you add more States increase MAXSTATE to match.
 
-void NextState()
-{
+void NextState() {
   STATE = STATE + 1;
   SUBSTATE = 0;
   NextStateRequest = false;
-  if(STATE > MAXSTATE)
-  {
+  if(STATE > MAXSTATE) {
     STATE = 0;
     SUBSTATE = 0;
   }
@@ -25,8 +25,7 @@ void NextState()
 // (There is a current limited resistor on the board to prevent over current if the Set Button is pressed at
 //  the same time as the pin is driving the piezo.)
 
-void beepsound(int freq, int freqlenght)
-{
+void beepsound(int freq, int freqlenght) {
   // freq was 4000
   // freqlenght was 100
   pinMode(SETBUTTON, OUTPUT);
@@ -34,65 +33,56 @@ void beepsound(int freq, int freqlenght)
   delay(freqlenght);
   noTone(SETBUTTON);
   digitalWrite(SETBUTTON, HIGH);
-  
-  #if ARDUINO >= 101 
+
+  #if ARDUINO >= 101
   pinMode(SETBUTTON, INPUT_PULLUP);
 //  digitalWrite(SETBUTTON, HIGH);
   #else
 //  digitalWrite(SETBUTTON, HIGH);
   pinMode(SETBUTTON, INPUT);
   #endif
-  
+
 }
 
 //*******************************************************************************************************************
 // 								                              Display Time Routine
 //*******************************************************************************************************************
-void DisplayTimeSub()
-{
+void DisplayTimeSub() {
 
-  if(NextStateRequest)
-  {
-    SUBSTATE =99;
+  if(NextStateRequest) {
+    SUBSTATE = 99;
   }
 
-  if(NextSUBStateRequest)
-  {
+  if(NextSUBStateRequest) {
     SUBSTATE = SUBSTATE +1;
-    if(SUBSTATE>4)
-    {
+    if(SUBSTATE>4) {
       SUBSTATE =1;
     }
     NextSUBStateRequest = false;
   }
 
   UpdateTime = UpdateTime + 1;
-  if(UpdateTime > 10000)
-  {
+  if(UpdateTime > 10000) {
     checktime();
     checkDate();
     UpdateTime = 0;
   }
 
 
-  switch (SUBSTATE) 
-  {
+  switch (SUBSTATE) {
   case 0:                // Start Display Time
     SUBSTATE = 1;
     blinkON = true;
     blinkFlag = false;
     blinkMin = false;
     blinkHour = false;
-    
+
     checktime();
     checkDate();
-    
-    if(!JustWokeUpFlag2)
-    {
-    displayString("Time");
-    }
-    else
-    {
+
+    if(!JustWokeUpFlag2) {
+      displayString("Time");
+    } else {
       JustWokeUpFlag2 = false;
     }
     delay(250);
@@ -100,7 +90,6 @@ void DisplayTimeSub()
     break;
 
   case 1:              // Time
-
 //    checktime();
     writeTime(HourTens, HourOnes, MinTens, MinOnes);
     break;
@@ -113,25 +102,25 @@ void DisplayTimeSub()
   case 3:              // Month
  //   checkDate();
     displayMonth(MonthCode-1);
-    break;      
+    break;
 
   case 4:              // Date
  //   checkDate();
     displayDate();
     delay(100);
-    break;  
+    break;
 
   case 5:              // Year
 
-    break;  
+    break;
 
   case 99:              // Exit Display Time
 
     NextState();
     clearmatrix();
 
-    break;  
-  }  
+    break;
+  }
 }
 
 //*******************************************************************************************************************
@@ -141,7 +130,7 @@ void setTimeSub()
 {
 
 
-  switch (SUBSTATE) 
+  switch (SUBSTATE)
   {
   case 0:                // Start SET Time
     displayString("Set?");
@@ -173,7 +162,7 @@ void setTimeSub()
     writeTime(HourTens, HourOnes, MinTens, MinOnes);
     if(NextSUBStateRequest)
     {
-      settimeNEW(1);                                      
+      settimeNEW(1);
       NextSUBStateRequest = false;
     }
 
@@ -190,7 +179,7 @@ void setTimeSub()
     writeTime(HourTens, HourOnes, MinTens, MinOnes);
     if(NextSUBStateRequest)
     {
-      settimeNEW(2);                                     
+      settimeNEW(2);
       NextSUBStateRequest = false;
     }
 
@@ -201,13 +190,13 @@ void setTimeSub()
       NextStateRequest = false;
     }
 
-    break;      
+    break;
 
   case 4:                                                          // Day + one
     displayStringDay(Days -1);
     if(NextSUBStateRequest)
     {
-      settimeNEW(3);                                     
+      settimeNEW(3);
       NextSUBStateRequest = false;
     }
 
@@ -217,13 +206,13 @@ void setTimeSub()
       NextStateRequest = false;
     }
 
-    break;  
+    break;
 
   case 5:                                                          //  Month + one
     displayMonth(MonthCode-1);
     if(NextSUBStateRequest)
     {
-      settimeNEW(4);                                     
+      settimeNEW(4);
       NextSUBStateRequest = false;
     }
 
@@ -232,13 +221,13 @@ void setTimeSub()
       SUBSTATE =6;
       NextStateRequest = false;
     }
-    break;  
+    break;
 
   case 6:                                                          //  Date + one
     displayDate();
     if(NextSUBStateRequest)
     {
-      settimeNEW(5);                                     
+      settimeNEW(5);
       NextSUBStateRequest = false;
     }
     if(NextStateRequest)
@@ -246,18 +235,18 @@ void setTimeSub()
       SUBSTATE =8;
       NextStateRequest = false;
     }
-    break;     
+    break;
 
     /*
   case 7:                                                          //  Year + one ** NOTE: not used
-     displayString("Year"); 
-     
+     displayString("Year");
+
      if(NextSUBStateRequest)
      {
-     settimeNEW(6);                                     
+     settimeNEW(6);
      NextSUBStateRequest = false;
      }
-     
+
      if(NextStateRequest)
      {
      SUBSTATE =8;
@@ -275,17 +264,17 @@ void setTimeSub()
   case 9:                                                          // Select 12 or 24 hour clock
 
     if(NewTimeFormate)
-    {   
-      displayString("12 h"); 
+    {
+      displayString("12 h");
     }
-    else   
+    else
     {
       displayString("24 h");
     }
 
     if(NextSUBStateRequest)
     {
-      NewTimeFormate = !NewTimeFormate;                                     
+      NewTimeFormate = !NewTimeFormate;
       NextSUBStateRequest = false;
       TwelveTwentyFourConvert();
       A_TH_Not24_flag = NewTimeFormate;
@@ -298,14 +287,14 @@ void setTimeSub()
       NextStateRequest = false;
     }
 
-    break; 
+    break;
 
   case 99:              // Exit Set Time
     blinkFlag = false;
     NextState();
     clearmatrix();
 
-    break;    
+    break;
   }
 }
 
@@ -316,7 +305,7 @@ void setAlarmSub()
 {
 
 
-  switch (SUBSTATE) 
+  switch (SUBSTATE)
   {
   case 0:                // Start SET Alarm
     displayString("ALM?");
@@ -354,7 +343,7 @@ void setAlarmSub()
     writeTime(AHourTens, AHourOnes, AMinTens, AMinOnes);
     if(NextSUBStateRequest)
     {
-      setAlarm(1);                                      
+      setAlarm(1);
       NextSUBStateRequest = false;
     }
 
@@ -364,14 +353,14 @@ void setAlarmSub()
       SUBSTATE =3;
       NextStateRequest = false;
     }
-    break;   
+    break;
 
   case 3:
     blinkHour = true;
     writeTime(AHourTens, AHourOnes, AMinTens, AMinOnes);
     if(NextSUBStateRequest)
     {
-      setAlarm(2);                                      
+      setAlarm(2);
       NextSUBStateRequest = false;
     }
 
@@ -381,19 +370,19 @@ void setAlarmSub()
       SUBSTATE =4;
       NextStateRequest = false;
       //      EnableAlarm1(true);
-    }  
+    }
     break;
 
   case 4:
     if(ALARMON)
-    {   
-//      displayString("A ON"); 
+    {
+//      displayString("A ON");
       displayGraphic(1,0,5);
       displayGraphic(2,5,5);
       displayGraphic(0,10,4);
       displayGraphic(3,14,5);
     }
-    else   
+    else
     {
 //      displayString("AOFF");
       displayGraphic(1,0,5);
@@ -404,7 +393,7 @@ void setAlarmSub()
 
     if(NextSUBStateRequest)
     {
-      ALARMON = !ALARMON;                                     
+      ALARMON = !ALARMON;
       NextSUBStateRequest = false;
     }
 
@@ -413,7 +402,7 @@ void setAlarmSub()
     {
       blinkMin = false;
       SUBSTATE =99;
-      NextStateRequest = false;  
+      NextStateRequest = false;
       if(ALARMON)
       {
         EnableAlarm1(true);
@@ -424,16 +413,16 @@ void setAlarmSub()
       }
     }
 
-    break;  
+    break;
 
   case 99:              // Exit Set Alarm
     blinkFlag = false;
     NextState();
     clearmatrix();
 
-    break;      
+    break;
   }
-}  
+}
 
 //*******************************************************************************************************************
 // 								                              Stop Watch
@@ -441,8 +430,8 @@ void setAlarmSub()
 void StopWatch()
 {
 
-  switch (SUBSTATE) 
-  {  
+  switch (SUBSTATE)
+  {
   case 0:                                                          // Stop Watch Set-up
 
 
@@ -468,14 +457,14 @@ void StopWatch()
     clearmatrix();
     writeTime(SWDigit4, SWDigit3, SWDigit2, SWDigit1);
 
-    break; 
+    break;
 
   case 1:                                                          // Waiting for "Start" button to be pressed
     writeTime(SWDigit4, SWDigit3, SWDigit2, SWDigit1);
 
     if(NextSUBStateRequest)
     {
-      SUBSTATE = 2;    
+      SUBSTATE = 2;
       NextSUBStateRequest = false;
       SleepEnable = false;
       currentMillis = millis();
@@ -486,7 +475,7 @@ void StopWatch()
     {
       SUBSTATE =99;
       NextStateRequest = false;
-    }  
+    }
 
     break;
 
@@ -500,7 +489,7 @@ void StopWatch()
  //     OldTime = CurrentTime;
        SleepTimer = currentMillis;
       TotalTime = TotalTime + 1;
-      if(TotalTime > 5999)                                     // Over 99 minutes can "not" be displayed (60seconds x 99 = 5940) 
+      if(TotalTime > 5999)                                     // Over 99 minutes can "not" be displayed (60seconds x 99 = 5940)
       {
         TotalTime = 0;
       }
@@ -513,13 +502,13 @@ void StopWatch()
     SWDigit4 = SWMINUTES / 10;
     SWDigit3 = SWMINUTES % 10;
     SWDigit2 = SWSECONDS / 10;
-    SWDigit1 = SWSECONDS % 10;    
+    SWDigit1 = SWSECONDS % 10;
 
     writeTime(SWDigit4, SWDigit3, SWDigit2, SWDigit1);
 
     if(NextSUBStateRequest)
     {
-      SUBSTATE = 1;    
+      SUBSTATE = 1;
       NextSUBStateRequest = false;
       SleepEnable = true;
     }
@@ -528,10 +517,10 @@ void StopWatch()
     {
       SUBSTATE =99;
       NextStateRequest = false;
-    }  
-    break; 
-    
-/*    
+    }
+    break;
+
+/*
 // Not using this RTC version since it seems too power hungery due to constant I2C polling
   case 2:                                                          // Stop Watch Running
 
@@ -541,7 +530,7 @@ void StopWatch()
     {
       OldTime = CurrentTime;
       TotalTime = TotalTime + 1;
-      if(TotalTime > 5940)                                     // Over 99 minutes can "not" be displayed (60seconds x 99 = 5940) 
+      if(TotalTime > 5940)                                     // Over 99 minutes can "not" be displayed (60seconds x 99 = 5940)
       {
         TotalTime = 0;
       }
@@ -554,13 +543,13 @@ void StopWatch()
     SWDigit4 = SWMINUTES / 10;
     SWDigit3 = SWMINUTES % 10;
     SWDigit2 = SWSECONDS / 10;
-    SWDigit1 = SWSECONDS % 10;    
+    SWDigit1 = SWSECONDS % 10;
 
     writeTime(SWDigit4, SWDigit3, SWDigit2, SWDigit1);
 
     if(NextSUBStateRequest)
     {
-      SUBSTATE = 1;    
+      SUBSTATE = 1;
       NextSUBStateRequest = false;
       SleepEnable = true;
     }
@@ -569,8 +558,8 @@ void StopWatch()
     {
       SUBSTATE =99;
       NextStateRequest = false;
-    }  
-    break; 
+    }
+    break;
 */
   case 99:              // Exit Stop Watch Function
 
@@ -579,8 +568,8 @@ void StopWatch()
 
     SleepEnable = true;
 
-    break;   
-  } 
+    break;
+  }
 }
 
 //*******************************************************************************************************************
@@ -590,8 +579,8 @@ void StopWatch()
 void DisplaySerialData()
 {
   int temp =0;
-  switch (SUBSTATE) 
-  {  
+  switch (SUBSTATE)
+  {
 
   case 0:                                                          // Display Set-up
 
@@ -620,7 +609,7 @@ void DisplaySerialData()
     else
     {
       MessagePointer= 0;
-      SUBSTATE = 3; 
+      SUBSTATE = 3;
       SleepEnable = true;
     }
 
@@ -642,10 +631,10 @@ void DisplaySerialData()
     {
       SUBSTATE =99;
       NextStateRequest = false;
-    }  
-    break; 
+    }
+    break;
 
-    //    break;  
+    //    break;
 
   case 2:                                                          // Receive Serial
 
@@ -653,7 +642,7 @@ void DisplaySerialData()
     // LED MATRIX
     //
     // Port C: C0 to C3 set to high. Columns 17 to 20 of LED matrix - Cathode connection
-    PORTC = (PORTC & B11110000) | B00001111;      
+    PORTC = (PORTC & B11110000) | B00001111;
     // Port B: Unselect the MUX chip
     PORTB = (1<<PORTB7);
     // Port B: Set all the ROWs to high: High on both cathode and annode = no current ?
@@ -673,7 +662,7 @@ shortloop:
         IncomingMessIndex++;
         //   IncomingMessage[IncomingMessIndex] = '\0';
         Serial.print(MessageRead);
-      } 
+      }
     }
 
     bval = !digitalRead(SETBUTTON);
@@ -699,10 +688,10 @@ shortloop:
     }
     else
     {
-      SUBSTATE = 3; 
+      SUBSTATE = 3;
       FILLEEPROM();
       OptionModeFlag = false;
-      
+
 
     }
     SleepTimer = millis();
@@ -718,7 +707,7 @@ shortloop:
     {
       TEXT = IncomingMessage[i] - ASCII_OFFSET;
       for(int y =0;y<5;y++)
-      {    
+      {
         Message[MessagePointer] = LETTERS[TEXT][y];
         MessagePointer = MessagePointer +1;
       }
@@ -741,21 +730,21 @@ shortloop:
     SleepEnable = true;
 
 
-    break;    
+    break;
 
     // ==================================================================================================
 
-  case 4:     
+  case 4:
 
     scrollCounter = scrollCounter +1;
     if(scrollCounter>scrollSpeed)
     {
-      
+
       if(ScrollLoops > 0)
       {
         SleepTimer = millis();
       }
-      
+
       IncomingIndex = StartWindow;
       for(int i=0;i<20;i++)
       {
@@ -796,7 +785,7 @@ shortloop:
     {
       SUBSTATE =99;
       NextStateRequest = false;
-    }  
+    }
 
     if(OptionModeFlag)
     {
@@ -804,7 +793,7 @@ shortloop:
       displayString("NEW?");
       delay(250);
     }
-    break;  
+    break;
 
   case 99:              // Exit Stop Watch Function
 
@@ -816,7 +805,7 @@ shortloop:
 
     SleepEnable = true;
 
-    break;  
+    break;
   }
 }
 
@@ -832,12 +821,12 @@ void ResetScrollMessage()
   scrollCounter = 0;
 
   for(int i =0;i<275;i++)
-  {    
+  {
     Message[i] = 0;
   }
 
   for(int i =0;i<24;i++)
-  {    
+  {
     IncomingMessage[i] = 0;
   }
 }
@@ -850,8 +839,8 @@ void graphican()
 
   int temp =0;
   //  int rand = 0;
-  switch (SUBSTATE) 
-  {  
+  switch (SUBSTATE)
+  {
 
   case 0:
     SUBSTATE =1;
@@ -863,9 +852,9 @@ void graphican()
     targdist = 0;
     displayString("Worm");
     delay(250);
-    break;  
+    break;
 
-  case 1:      
+  case 1:
 
     if(scrollCounter>scrollSpeed)
     {
@@ -875,7 +864,7 @@ void graphican()
       {
         c = 0;
       }
-      // --     
+      // --
 
 
       if(NextSUBStateRequest)
@@ -934,7 +923,7 @@ void graphican()
       bitSet(temp, y);
 
 
-      // --         
+      // --
       led_draw_col(c, temp, 0xFF);
       if((c-wormlenght)<0)
       {
@@ -953,12 +942,12 @@ void graphican()
     {
       SUBSTATE =99;
       NextStateRequest = false;
-    }  
+    }
 
     if(OptionModeFlag)
     {
       soundeffect = !soundeffect;
-    }   
+    }
 
     scrollCounter = scrollCounter +1;
     break;
@@ -970,7 +959,7 @@ void graphican()
     NextState();
     clearmatrix();
 
-    break;  
+    break;
 
   }
 }
@@ -1020,9 +1009,9 @@ void lamptest()
   }
 
   //*******************************************************************************************************************
-  //                                                                                         Read Message from EEPROM			
+  //                                                                                         Read Message from EEPROM
   //*******************************************************************************************************************
-  void GETFROMEEPROM() 
+  void GETFROMEEPROM()
   {
     int EEPadd;
     IncomingMessIndex = EEPROM.read(0);
@@ -1033,7 +1022,7 @@ void lamptest()
   }
 
 //*******************************************************************************************************************
-//                                                                                   Save changed Message to EEPROM			
+//                                                                                   Save changed Message to EEPROM
 //*******************************************************************************************************************
 void FILLEEPROM()                                                      // Normally only run once if EEPROM is clear
 {
@@ -1065,7 +1054,7 @@ void displayString(const char outText[])
 void displayGraphic(int index, int pos, int len)
 {
 	for (int y=0 ; y<len ; y++)
-		led_draw_col(pos++, GRAPHIC[index][y], 0xFF); 
+		led_draw_col(pos++, GRAPHIC[index][y], 0xFF);
 }
 
 
@@ -1084,7 +1073,7 @@ draw_small_digit(
 			blinkON && blinking ? 0 : 0xFF
 		);
 	}
-}    
+}
 
 
 void
@@ -1094,8 +1083,8 @@ draw_char(
 )
 {
 	for (int y=0 ; y<5 ; y++)
-		led_draw_col(col++, LETTERS[c - ASCII_OFFSET][y], 0xFF); 
-} 
+		led_draw_col(col++, LETTERS[c - ASCII_OFFSET][y], 0xFF);
+}
 
 
 /*
@@ -1163,22 +1152,16 @@ clearmatrix()
 /**
  * Display the four digit time with small characters.
  *
- * 
+ *
  * Fills diplay with formated time
  * Depending on postion of "1"s spacing is adjusted beween it and next digit
  * Blinks if it settng mode
  * displays AM/PM dot and Alarm on dot
  */
-void
-writeTime(
-	uint8_t dig1,
-	uint8_t dig2,
-	uint8_t dig3,
-	uint8_t dig4
-)         
-{
-	draw_small_digit( 2, dig1, blinkHour);
-	draw_small_digit( 6, dig2, blinkHour);
+void writeTime(uint8_t dig1, uint8_t dig2, uint8_t dig3, uint8_t dig4) {
+
+	draw_small_digit(2, dig1, blinkHour);
+	draw_small_digit(6, dig2, blinkHour);
 
 	// the slowly flashing " : "
 	static uint16_t bright = 0;
@@ -1196,11 +1179,11 @@ writeTime(
 	// Alarm dot (top left) Do not display while setting alarm
 	if (ALARMON && (STATE == 1))
 		bitSet(AMPMALARMDOTS,6);
-  
+
 	// AM / PM dot (bottom left) (Display or Set Time)
 	if(PM_NotAM_flag && (STATE == 1 || STATE == 2) && TH_Not24_flag)
 		bitSet(AMPMALARMDOTS,0);
-  
+
 	// AM / PM dot (bottom left) (Set Alarm Time)
 	if(A_PM_NotAM_flag && (STATE == 3) && TH_Not24_flag)
 		bitSet(AMPMALARMDOTS,0);

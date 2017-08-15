@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 /** \file
  * Solder:Time Desk Clock
  * SpikenzieLabs.com
