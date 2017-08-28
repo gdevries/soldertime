@@ -1,5 +1,6 @@
 #include <Arduino.h>
-#include <Timer1.h>
+#include "TimerOne.h"
+#include "leds.cpp"
 
 /* \file
  * Setup code for the Solder:Time Desk Clock device.
@@ -9,14 +10,14 @@
 
 void setup() {
 #if ARDUINO >= 101
-	pinMode(2, INPUT_PULLUP);
-	pinMode(3, INPUT_PULLUP);
+	//pinMode(UPBUTTON, INPUT_PULLUP);
+	//pinMode(DOWNBUTTON, INPUT_PULLUP);
 #else
 	// Write a high to pin, acts as weak pull-up
-	digitalWrite(2, HIGH);
-	digitalWrite(3, HIGH);
-	pinMode(2, INPUT);
-	pinMode(3, INPUT);
+	digitalWrite(UPBUTTON, HIGH);
+	digitalWrite(DOWNBUTTON, HIGH);
+	pinMode(UPBUTTON, INPUT);
+	pinMode(DOWNBUTTON, INPUT);
 #endif
 
 	// Column address bits 4 to 16 decode
@@ -40,8 +41,8 @@ void setup() {
 	// the ISR holds a single LED on for some number of microseconds;
 	// this timeout value must be higher than that (by a few microseconds at least)
 	// Lower numbers == less flicker
-	Timer1.initialize(30); // was 100
-	Timer1.attachInterrupt(LEDupdateTHREE);
+	TimerOne.initialize(30); // was 100
+	TimerOne.attachInterrupt(LEDupdateTHREE);
 
 	// I2C Inits
 	Wire.begin();
@@ -57,8 +58,8 @@ void setup() {
 	//  fillmatrix();
 	delay(300);
 
-	// if the set button is held at startup, run a lamp test
-	if (!digitalRead(SETBUTTON)) {
+	// if the top button is held at startup, run a lamp test
+	if (!digitalRead(UPBUTTON)) {
 		lamptest();
 	}
 
@@ -71,12 +72,8 @@ void setup() {
 	}
 	delay(1000);
 
-	displayString("v2.0"); // Updated to 2.0 by GdeVries
-	delay(500);
+	displayString("GPSC"); // Updated so we know this isn't the Spikenzie firmware
+	delay(1000);
 	clearmatrix();
 
-	SetAlarmTime(); // for testing
-	EnableAlarm1(false); // for testing
-
-	SleepTimer = millis();
 }

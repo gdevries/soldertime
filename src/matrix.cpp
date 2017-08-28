@@ -1,4 +1,7 @@
 #include <Arduino.h>
+#include "deskclock.cpp"
+#include "font.c"
+
 
  /** \file
  * Matrix driver for the Solder:Time Desk Clock.

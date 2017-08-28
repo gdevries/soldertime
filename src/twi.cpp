@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <Wire.h>
+#include "deskclock.cpp"
 
 //*******************************************************************************************************************
 // 								                                 I2C TX RX
@@ -18,8 +19,7 @@ void I2C_RX(byte devicerx, byte regaddrx) {                                     
   Wire.requestFrom(int(devicerx), 1);
 
   byte c = 0;
-  if(Wire.available())
-  {
+  if(Wire.available()) {
     i2cData = Wire.read();
   }
 }

@@ -18,22 +18,24 @@
  * This code is provided as is. No guaranties or warranties are given
  * in any form. It is your responsibilty to determine this codes
  * suitability for your application.
- * 
+ *
  * Changes:
  * A. Modified LEDupdateTHREE() void used by ST:2 Watch to function
  * with the new circuits in the Solder:Time Desk Clock
  * B. Modified port dirctions on some pins to deal with new circuits.
  * C. Changed sleep mode into a "change back to display time" mode
- */ 
+ */
 
 #include <Wire.h>
 #include <EEPROM.h>
 
-#include <TimerOne.h>
+#include "TimerOne.h"
 
 #include <avr/sleep.h>
 #include <avr/power.h>
 #include <avr/wdt.h>
+
+#include "deskclock.cpp"
 
 /** Overall width of the LED screen */
 #define WIDTH 20
@@ -41,15 +43,6 @@
 /** Overlal height of the LED screen */
 #define HEIGHT 8
 
-
-// Worm animation
-int c =0;
-int y = 3;
-int target = 3;
-int targdist =0;
-boolean targdir = true;
-int wormlenght = 15;
-boolean soundeffect = false;
 
 // int  i  =0;
 // int  i2  =0;
@@ -88,10 +81,6 @@ unsigned long SleepLimit = 6000;
 boolean SleepEnable = true;
 int UpdateTime = 0;
 
-#define BUTTON1 2
-#define MODEBUTTON 2
-#define BUTTON2 3
-#define SETBUTTON 3
 boolean  bval = false;
 
 //char Str1[] = "Hi";
@@ -151,10 +140,10 @@ boolean A_PM_NotAM_flag = false;
   int CurrentTime = 0;
   int TotalTime = 0;
 
-uint8_t SWDigit4 = 0;  
-uint8_t SWDigit3 = 0;   
-uint8_t SWDigit2 = 0; 
-uint8_t SWDigit1 = 0; 
+uint8_t SWDigit4 = 0;
+uint8_t SWDigit3 = 0;
+uint8_t SWDigit2 = 0;
+uint8_t SWDigit1 = 0;
 
 int SWMINUTES = 0;
 int SWSECONDS = 0;
@@ -180,7 +169,7 @@ const int digitoffset = 95;                // 95             // was 16
 
 // Constants
 // DS1337+ Address locations
-#define		RTCDS1337	B01101000               // was B11010000  
+#define		RTCDS1337	B01101000               // was B11010000
 #define		RTCCONT		B00001110		//; Control
 #define		RTCSTATUS       B00001111		//; Status
 
