@@ -1,8 +1,6 @@
 #include <Arduino.h>
 #include "font.c"
 #include "matrix.cpp"
-#include "buttons.cpp"
-#include "deskclock.cpp"
 
 void displayString(const char outText[]);
 void displayGraphic(int index, int pos, int len);
@@ -10,48 +8,6 @@ void draw_small_digit (uint8_t column, unsigned digit, unsigned blinking);
 void draw_char(unsigned col, const char c);
 void clearmatrix();
 void writeTime(uint8_t dig1, uint8_t dig2, uint8_t dig3, uint8_t dig4);
-
-// LED tester
-void lamptest() {
-  int lamptestspeed = 250;
-  clearmatrix();
-  bval = !digitalRead(UPBUTTON);
-  if(bval) {
-    do
-    {
-      //    clearmatrix();
-      for(int i = 0; i<20;i++)
-      {
-        for(int y = 0; y<8;y++)
-        {
-	  led_draw(i, y, 0xFF);
-          delay(lamptestspeed / 10);
-          bval = !digitalRead(UPBUTTON);
-          if(bval)
-          {
-            lamptestspeed = lamptestspeed -1;
-            if(lamptestspeed== 0)
-            {
-              lamptestspeed = 250;
-            }
-          }
-        }
-
-        bval = !digitalRead(DOWNBUTTON);
-        if(bval)
-        {
-          break;
-        }
-
-        delay(lamptestspeed);
-	led_draw_col(i, 0, 0);
-        delay(lamptestspeed / 5);
-      }
-      bval = !digitalRead(DOWNBUTTON);
-    }
-    while(!bval);
-    }
-  }
 
 /*
  * Output 4 Characters to Display
@@ -125,17 +81,4 @@ void writeTime(uint8_t dig1, uint8_t dig2, uint8_t dig3, uint8_t dig4) {
 	draw_small_digit(12, dig3, blinkMin);
 	draw_small_digit(16, dig4, blinkMin);
 
-	AMPMALARMDOTS = 0;
-
-	// Alarm dot (top left) Do not display while setting alarm
-	if (ALARMON && (STATE == 1))
-		bitSet(AMPMALARMDOTS,6);
-
-	// AM / PM dot (bottom left) (Display or Set Time)
-	if(PM_NotAM_flag && (STATE == 1 || STATE == 2) && TH_Not24_flag)
-		bitSet(AMPMALARMDOTS,0);
-
-	// AM / PM dot (bottom left) (Set Alarm Time)
-	if(A_PM_NotAM_flag && (STATE == 3) && TH_Not24_flag)
-		bitSet(AMPMALARMDOTS,0);
 }

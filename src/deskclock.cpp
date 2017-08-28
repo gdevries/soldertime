@@ -1,3 +1,4 @@
+
 #include <Arduino.h>
 
 /** \file
@@ -35,8 +36,6 @@
 #include <avr/power.h>
 #include <avr/wdt.h>
 
-#include "deskclock.cpp"
-
 /** Overall width of the LED screen */
 #define WIDTH 20
 
@@ -50,17 +49,7 @@
 // uint8_t incro = 0;
 // uint8_t column = 0;
 uint8_t TEXT = 65;
-uint8_t i2cData = 0;
 // int nextcounter = 0;
-
-int STATE = 0;
-int SUBSTATE = 0;
-int MAXSTATE = 6;
-boolean NextStateRequest = false;
-boolean NextSUBStateRequest = false;
-boolean JustWokeUpFlag = false;
-boolean JustWokeUpFlag2= false;
-boolean OptionModeFlag = false;
 
 int ROWBITINDEX = 0;
 int scrollCounter =0;
@@ -75,31 +64,7 @@ boolean blinkMin = false;
 
 boolean displayFLAG = true;
 
-unsigned long SleepTimer;
-unsigned long currentMillis;
-unsigned long SleepLimit = 6000;
-boolean SleepEnable = true;
-int UpdateTime = 0;
-
 boolean  bval = false;
-
-//char Str1[] = "Hi";
-char IncomingMessage[24];
-char MessageRead;
-//uint8_t INBYTE;
-uint8_t Message[275];
-int IncomingIndex = 0;
-int IncomingMessIndex =0;
-int IncomingMax = 0;
-int MessagePointer = 0;
-int StartWindow = 0;
-int IncomingLoaded =0;
-
-
-char days[7][4] = {
-  "Sun","Mon","Tue","Wed","Thr","Fri","Sat"};
-char months[12][4] = {
-  "Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
 
 // Time Variables
 uint8_t HourTens = 1;
