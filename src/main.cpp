@@ -5,7 +5,6 @@
 #include "buttons.cpp"
 
 int timeZone = 0;
-uint8_t i2cData = 0;
 
 void setup() {
 //#if ARDUINO >= 101

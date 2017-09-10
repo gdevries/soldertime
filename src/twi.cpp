@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <Wire.h>
 
+uint8_t i2cData = 0;
+
 //*******************************************************************************************************************
 // 								                                 I2C TX RX
 //*******************************************************************************************************************
@@ -17,7 +19,6 @@ void I2C_RX(byte devicerx, byte regaddrx) {                                     
   Wire.endTransmission();
   Wire.requestFrom(int(devicerx), 1);
 
-  byte c = 0;
   if(Wire.available()) {
     i2cData = Wire.read();
   }

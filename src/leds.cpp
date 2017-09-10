@@ -1,6 +1,8 @@
 #include <Arduino.h>
-#include "font.c"
 #include "matrix.cpp"
+
+const int digitoffset = 95;                // 95             // was 16
+
 
 void displayString(const char outText[]);
 void displayGraphic(int index, int pos, int len);
@@ -34,7 +36,7 @@ void draw_small_digit (uint8_t column, unsigned digit, unsigned blinking) {
 		led_draw_col(
 			column+i,
 			LETTERS[digit+digitoffset][i+1],
-			blinkON && blinking ? 0 : 0xFF
+			0xFF // TODO: Bright?
 		);
 	}
 }
@@ -42,7 +44,7 @@ void draw_small_digit (uint8_t column, unsigned digit, unsigned blinking) {
 
 void draw_char(unsigned col, const char c) {
 	for (int y=0 ; y<5 ; y++)
-		led_draw_col(col++, LETTERS[c - ASCII_OFFSET][y], 0xFF);
+		led_draw_col(col++, LETTERS[c - ASCII_OFFSET][y],0xFF );
 }
 
 
@@ -67,8 +69,8 @@ void clearmatrix() {
  */
 void writeTime(uint8_t dig1, uint8_t dig2, uint8_t dig3, uint8_t dig4) {
 
-	draw_small_digit(2, dig1, blinkHour);
-	draw_small_digit(6, dig2, blinkHour);
+	draw_small_digit(2, dig1, 0);
+	draw_small_digit(6, dig2, 0);
 
 	// the slowly flashing " : "
 	static uint16_t bright = 0;
@@ -78,7 +80,7 @@ void writeTime(uint8_t dig1, uint8_t dig2, uint8_t dig3, uint8_t dig4) {
 	led_draw(10, 2, 2*b);
 	led_draw(10, 4, 2*b);
 
-	draw_small_digit(12, dig3, blinkMin);
-	draw_small_digit(16, dig4, blinkMin);
+	draw_small_digit(12, dig3, 0);
+	draw_small_digit(16, dig4, 0);
 
 }

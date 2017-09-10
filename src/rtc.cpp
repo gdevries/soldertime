@@ -1,6 +1,69 @@
 #include <Arduino.h>
 #include "twi.cpp"
 
+// Constants
+// DS1337+ Address locations
+#define		RTCDS1337	B01101000               // was B11010000
+#define		RTCCONT		B00001110		//; Control
+#define		RTCSTATUS       B00001111		//; Status
+
+//#define		RTC_HSEC	B00000001		//; Hundredth of a secound
+#define		RTC_SEC		B00000000		//; Seconds
+#define		RTC_MIN		B00000001		//; Minuites
+#define		RTC_HOUR	B00000010		//; Hours
+
+#define		RTC_DAY  	B00000011		//; Day
+#define		RTC_DATE	B00000100		//; Date
+#define		RTC_MONTH	B00000101		//; Month
+#define		RTC_YEAR	B00000110		//; Year
+
+#define		RTC_ALARM1SEC	B00000111		//; Seconds
+#define		RTC_ALARM1MIN	B00001000		//; Minuites
+#define		RTC_ALARM1HOUR	B00001001		//; Hours
+#define         RTC_ALARM1DATE  B00001010               //; Date
+
+// Time Variables
+uint8_t HourTens = 1;
+uint8_t HourOnes = 2;
+uint8_t MinTens = 0;
+uint8_t MinOnes = 0;
+uint8_t SecTens = 0;
+uint8_t SecOnes = 0;
+
+uint8_t Days =1;
+uint8_t DateOnes = 1;
+uint8_t DateTens =0;
+uint8_t MonthOnes =1;
+uint8_t MonthTens = 1;
+uint8_t YearsOnes = 2;
+uint8_t YearsTens = 1;
+
+uint8_t DayCode =1;
+uint8_t MonthCode =1;
+
+//uint8_t SetDigit  = 4;
+//boolean MODEOVERRIDEFLAG = false;
+boolean NextStateFlag = false;
+boolean SetTimeFlag = false;
+boolean ALARM1FLAG = false;
+boolean ALARMON = false;
+
+// Fonts have been moved to font.c
+
+boolean TH_Not24_flag = true;
+boolean PM_NotAM_flag = false;
+boolean NewTimeFormate = TH_Not24_flag;
+uint8_t AMPMALARMDOTS = 0;
+
+// Alarm
+uint8_t AHourTens  = 1;
+uint8_t AHourOnes = 2;
+uint8_t AMinTens = 0;
+uint8_t AMinOnes = 0;
+
+boolean A_TH_Not24_flag = true;
+boolean A_PM_NotAM_flag = false;
+
 //*******************************************************************************************************************
 // 								                                 Check Time
 //*******************************************************************************************************************

@@ -8,6 +8,9 @@
 #include <stdint.h>
 #include "bitpattern.h"
 
+/// Font offset
+#define ASCII_OFFSET 0x20
+
 const uint8_t LETTERS[][5] = {
 	// Space
 	{
@@ -340,7 +343,7 @@ const uint8_t LETTERS[][5] = {
 		____X___,
 		_XXXXXXX,
 	},
-	// I  was   65,65,127,65,65, 
+	// I  was   65,65,127,65,65,
 	{
 		________,
 		_X_____X,

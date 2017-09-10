@@ -1,5 +1,4 @@
 #include <Arduino.h>
-#include "deskclock.cpp"
 #include "font.c"
 
 
@@ -9,6 +8,12 @@
  * Called by Timer 1 Interrupt to draw next column in LED matrix
  *
  */
+
+ /** Overall width of the LED screen */
+ #define WIDTH 20
+
+ /** Overlal height of the LED screen */
+ #define HEIGHT 8
 
 
 // Store a padded version of the array to avoid multiplies
